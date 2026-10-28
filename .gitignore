@@ -1,0 +1,13 @@
+# Build output
+bin/
+obj/
+.vs/
+*.user
+
+# Private: server deploy script and backups (server DLLs)
+deploy.ps1
+backups/
+
+# Claude work notes and settings: never published (any folder, any case)
+[Cc][Ll][Aa][Uu][Dd]*.md
+.claude/
