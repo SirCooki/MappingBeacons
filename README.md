@@ -24,6 +24,26 @@ In game the mod is called **Scouting Beacons**.
 - **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need, exploring range, fuel range,
   fuel depletion countdown, and warnings for limit overreach and an island that is fully explored.
 
+## Screenshots
+
+**Huginn's Cairn** (bronze)
+
+![Huginn's Cairn at work](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_action.jpg)
+![Huginn's Cairn window](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_menu.jpg)
+
+**Muninn's Spire** (silver)
+
+![Muninn's Spire at work](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/silver_action.jpg)
+![Muninn's Spire window](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/silver_menu.jpg)
+![Map before](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/silver_pre.jpg)
+![Map after, with locations](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/silver_result.jpg)
+
+**Allfather's Eye** (black metal)
+
+![Allfather's Eye at work](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_action.jpg)
+![Allfather's Eye window](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_menu.jpg)
+![Map after, with locations and ores](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_result.jpg)
+
 ## Markers
 
 - **Locations** (silver and black metal): burial chambers, troll and frost caves, sunken crypts, villages, infested

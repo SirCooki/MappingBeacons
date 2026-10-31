@@ -11,3 +11,6 @@ backups/
 # Claude work notes and settings: never published (any folder, any case)
 [Cc][Ll][Aa][Uu][Dd]*.md
 .claude/
+
+# Thunderstore package build output
+package/build/

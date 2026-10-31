@@ -1,0 +1,34 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "SirCookie"
+name = "MappingBeacons"
+versionNumber = "0.0.0" # set by publish.ps1 from Plugin.cs (DLL and package versions are always equal)
+description = "Build a beacon, feed it fuel and it maps the whole island it stands on, out to the coast. Higher tiers also mark dungeons, villages and ore."
+websiteUrl = "https://github.com/SirCooki/MappingBeacons"
+containsNsfwContent = false
+
+[package.dependencies]
+denikson-BepInExPack_Valheim = "5.4.2360"
+ValheimModding-Jotunn = "2.30.2"
+
+[build]
+icon = "./icon.png"
+readme = "../README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "../bin/Release/net462/ScoutingBeacons.dll"
+target = "plugins/ScoutingBeacons/ScoutingBeacons.dll"
+
+[[build.copy]]
+source = "./CHANGELOG.md"
+target = "CHANGELOG.md"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["valheim"]
+
+[publish.categories]
+valheim = ["mods", "building", "utility"]
