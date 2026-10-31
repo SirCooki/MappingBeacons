@@ -2,7 +2,7 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "SirCookie"
+namespace = "SirCookieAndTheThralls" # team that owns the upload tokens (token name: QantateTOP)
 name = "MappingBeacons"
 versionNumber = "0.0.0" # set by publish.ps1 from Plugin.cs (DLL and package versions are always equal)
 description = "Build a beacon, feed it fuel and it maps the whole island it stands on, out to the coast. Higher tiers also mark dungeons, villages and ore."

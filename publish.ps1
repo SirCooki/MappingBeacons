@@ -49,7 +49,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'tcli build failed' }
 }
 finally { Pop-Location }
-$Zip = Join-Path $Package "build\SirCookie-MappingBeacons-$Version.zip"
+$Zip = Join-Path $Package "build\QantateTOP-MappingBeacons-$Version.zip"
 if (-not (Test-Path $Zip)) { throw "Package missing: $Zip" }
 Write-Host "Package: $Zip"
 if ($NoUpload) { return }
@@ -61,7 +61,7 @@ foreach ($site in $Sites.Keys) {
     if (-not $token) { Write-Host "No $site token stored: run .\set-upload-tokens.ps1" -ForegroundColor Yellow; $failed += $site; continue }
     Push-Location $Package
     try {
-        & $Tcli publish --file $Zip --token $token --repository $Sites[$site] --package-version $Version
+        & $Tcli publish --file $Zip --token $token --repository $Sites[$site] # version is inside the zip
         if ($LASTEXITCODE -ne 0) { $failed += $site; Write-Host "$site upload failed" -ForegroundColor Red }
         else { Write-Host "Uploaded $Version to $site" -ForegroundColor Green }
     }
