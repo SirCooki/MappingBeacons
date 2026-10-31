@@ -30,6 +30,8 @@ In game the mod is called **Scouting Beacons**.
 
 ![Huginn's Cairn at work](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_action.jpg)
 ![Huginn's Cairn window](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_menu.jpg)
+![Map before](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_pre.jpg)
+![Map after](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/bronze_result.jpg)
 
 **Muninn's Spire** (silver)
 
@@ -42,7 +44,9 @@ In game the mod is called **Scouting Beacons**.
 
 ![Allfather's Eye at work](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_action.jpg)
 ![Allfather's Eye window](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_menu.jpg)
+![Map before](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_pre.jpg)
 ![Map after, with locations and ores](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_result.jpg)
+![Mistlands, with brains and copper](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/blackmetal_mistlands.jpg)
 
 ## Markers
 
