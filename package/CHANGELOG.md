@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+- Renamed to "Valdar - Beacons that map" and moved to version 1.0.0. No gameplay changes since 0.3.5.
+- New icon: binoculars icon by Smashicons (Flaticon).
+
 ## 0.3.5
 - First public release.
 - Three beacons (Huginn's Cairn, Muninn's Spire, Allfather's Eye) that map the island they stand on, ring by ring,

@@ -49,7 +49,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'tcli build failed' }
 }
 finally { Pop-Location }
-$Zip = Join-Path $Package "build\QantateTOP-MappingBeacons-$Version.zip"
+$toml = Get-Content (Join-Path $Package 'thunderstore.toml') -Raw
+if ($toml -notmatch '(?m)^namespace\s*=\s*"([^"]+)"') { throw 'namespace not found in package\thunderstore.toml' }
+$Zip = Join-Path $Package "build\$($Matches[1])-MappingBeacons-$Version.zip"
 if (-not (Test-Path $Zip)) { throw "Package missing: $Zip" }
 Write-Host "Package: $Zip"
 if ($NoUpload) { return }

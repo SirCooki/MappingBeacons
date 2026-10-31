@@ -1,8 +1,8 @@
-# Mapping Beacons
+# Valdar - Beacons that map
 
 A Valheim mod (BepInEx + Jötunn) that adds scouting beacons: build one, feed it fuel, and it maps the island it
 stands on, ring by ring, out to the coast. Open the beacon to copy what it has mapped onto your own map.
-In game the mod is called **Scouting Beacons**.
+Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBeacons`).
 
 ## Beacons
 
@@ -77,6 +77,10 @@ default); the DLL is copied into the game's plugins folder.
 
 Console command for testing (cheats on, single player or host): `sb_orecheck [radius]` compares predicted ore with
 the real deposits around you.
+
+## Credits
+
+Icon: <a href="https://www.flaticon.com/free-icons/binoculars" title="binoculars icons">Binoculars icons created by Smashicons - Flaticon</a>
 
 ## Licence
 

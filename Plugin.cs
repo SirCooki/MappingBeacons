@@ -15,8 +15,8 @@ namespace ScoutingBeacons
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGUID = "SirCookie.ScoutingBeacons";
-        public const string PluginName = "Scouting Beacons";
-        public const string PluginVersion = "0.3.5";
+        public const string PluginName = "Valdar - Beacons that map";
+        public const string PluginVersion = "1.0.0";
 
         public const string BasePrefab = "incinerator"; // the Obliterator
 
