@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+- "Block automatic feeding" now also keeps AzuAutoStore and AzuCraftyBoxes away from beacons.
+- Fuel overview table in the description.
+
 ## 1.0.0
 - Renamed to "Valdar - Beacons that map" and moved to version 1.0.0. No gameplay changes since 0.3.5.
 - New icon: binoculars icon by Smashicons (Flaticon).

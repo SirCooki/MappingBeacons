@@ -84,8 +84,8 @@ In this overview you can see how much fuel you get from each resource.
 ## Other mods
 
 "Block automatic feeding" (on by default) keeps chest-automation mods away from beacons: ServersideQoL AutoStore
-doesn't store items into them, ChestButler doesn't sort into them, and OttoFuel / ServersideQoL AutoProcess and
-TameAssist don't take fuel out of them.
+doesn't store items into them, ChestButler and AzuAutoStore don't sort or store into them, and OttoFuel,
+AzuCraftyBoxes and ServersideQoL AutoProcess / TameAssist don't take items out of them.
 
 ## Install
 

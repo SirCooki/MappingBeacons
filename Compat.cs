@@ -14,6 +14,45 @@ namespace ScoutingBeacons
 
         private static bool IsBeacon(string prefabName) => prefabName != null && BeaconTiers.ForPiece(Utils.GetPrefabName(prefabName)) != null;
 
+        // ---- Azumatt's AzuAutoStore (stores into chests) and AzuCraftyBoxes (crafts/builds from chests), every client ----
+        // Both keep their own list of chests and fill it through a static Boxes.AddContainer(Container) (checked against
+        // AzuAutoStore 3.1.7 and AzuCraftyBoxes 1.8.28): beacons are simply never added to those lists.
+
+        // { plugin GUID, Boxes class, name } (no value tuples: the game's runtime lacks System.ValueTuple)
+        private static readonly string[][] AzuMods =
+        {
+            new[] { "Azumatt.AzuAutoStore", "AzuAutoStore.Util.Boxes", "AzuAutoStore" },
+            new[] { "Azumatt.AzuCraftyBoxes", "AzuCraftyBoxes.Util.Functions.Boxes", "AzuCraftyBoxes" },
+        };
+
+        public static void PatchAzumatt(Harmony harmony)
+        {
+            foreach (var mod in AzuMods)
+            {
+                if (!Chainloader.PluginInfos.ContainsKey(mod[0])) continue;
+                try
+                {
+                    var boxes = AccessTools.TypeByName(mod[1]);
+                    var add = boxes != null ? AccessTools.Method(boxes, "AddContainer", new[] { typeof(Container) }) : null;
+                    if (add == null)
+                    {
+                        Jotunn.Logger.LogWarning($"{mod[2]} found but not the expected code; it may still use beacons");
+                        continue;
+                    }
+                    harmony.Patch(add, prefix: new HarmonyMethod(typeof(Compat), nameof(NoAzuBeacons)));
+                    Jotunn.Logger.LogInfo($"{mod[2]}: beacons skipped while \"Block automatic feeding\" is on");
+                }
+                catch (Exception e)
+                {
+                    Jotunn.Logger.LogWarning($"Couldn't adjust {mod[2]}: {e.Message}");
+                }
+            }
+        }
+
+        // __0 = the container argument, whatever the mod calls it
+        private static bool NoAzuBeacons(Container __0) =>
+            !Settings.BlockAutoFeeding.Value || !__0 || !IsBeacon(__0.gameObject.name);
+
         // ---- OttoFuel (every client): fuels smelters, kilns, fires ... from every container in range ----
 
         public const string OttoFuelGuid = "potto007.OttoFuel";

@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "SirCookieAndTheThralls" # team that owns the upload tokens (token name: QantateTOP)
 name = "MappingBeacons"
 versionNumber = "0.0.0" # set by publish.ps1 from Plugin.cs (DLL and package versions are always equal)
-description = "Build a beacon, feed it fuel and it maps the whole island it stands on, out to the coast. Higher tiers also mark dungeons, villages and ore."
+description = "Build a beacon, fuel it and scout out the environment. Higher beacon tears will reveal more information."
 websiteUrl = "https://github.com/SirCooki/MappingBeacons"
 containsNsfwContent = false
 
@@ -31,4 +31,4 @@ repository = "https://thunderstore.io"
 communities = ["valheim"]
 
 [publish.categories]
-valheim = ["mods", "building", "utility"]
+valheim = ["mods", "building", "utility", "deep-north-update"]

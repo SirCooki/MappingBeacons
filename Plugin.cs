@@ -16,7 +16,7 @@ namespace ScoutingBeacons
     {
         public const string PluginGUID = "SirCookie.ScoutingBeacons";
         public const string PluginName = "Valdar - Beacons that map";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.0.1";
 
         public const string BasePrefab = "incinerator"; // the Obliterator
 
@@ -38,6 +38,7 @@ namespace ScoutingBeacons
             var harmony = new Harmony(PluginGUID + ".compat");
             Compat.PatchServersideQoL(harmony);
             Compat.PatchOttoFuel(harmony);
+            Compat.PatchAzumatt(harmony);
         }
 
         private void AddPieces()

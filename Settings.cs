@@ -45,7 +45,8 @@ namespace ScoutingBeacons
                        "(1: 2x, 3x, 4x ...)."));
             BlockAutoFeeding = config.Bind(general, "Block automatic feeding", true,
                 Server("Mods that move items between chests leave beacons alone: ServersideQoL AutoStore doesn't store items " +
-                       "into beacons, and OttoFuel / ServersideQoL AutoProcess and TameAssist don't take fuel out of them. " +
+                       "into beacons, ChestButler and AzuAutoStore don't sort or store into them, and OttoFuel, AzuCraftyBoxes and " +
+                       "ServersideQoL AutoProcess / TameAssist don't take items out of them. " +
                        "ServersideQoL picks up a change after a server restart."));
             CoastBuffer = config.Bind(general, "Coast buffer", 1,
                 Server("Rings of ocean revealed along the coast so the shoreline doesn't look cut off.",
