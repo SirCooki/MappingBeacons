@@ -1,7 +1,7 @@
-# Valdar - Beacons that map
+# Beacons to map your surroundings
 
-A Valheim mod (BepInEx + Jötunn) that adds scouting beacons: build one, feed it fuel, and it maps the island it
-stands on, ring by ring, out to the coast. Open the beacon to copy what it has mapped onto your own map.
+A Valheim mod (BepInEx + Jötunn) that adds scouting beacons: build one, fuel it, and map the surroundings. You can only scout as far as the ocean biome. The beacons reach and mapping speed is capped by tier. Interact with the beacon to copy new information.
+
 Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBeacons`).
 
 ## Beacons
@@ -12,17 +12,40 @@ Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBea
 | Muninn's Spire | 15 Stone, 15 Silver | 2 km² | 18 in-game hours per km² | 0.9 | locations |
 | Allfather's Eye | 20 Yggdrasil wood, 20 Black metal | 4 km² | 6 in-game hours per km² | 0.75 | locations and ores |
 
-- Built with the hammer (Misc), no crafting station needed. The model is a recoloured Obliterator; wisps circle it
-  while it works (2 / 4 / 8) and turn red and pulse when it works past its optimal range.
-- **Mapping:** outward from the beacon in 12 m rings, over land connected to it. The ocean is the limit: one beacon
-  maps one island and never the sea around it. Rings the builder had already explored when placing it are free.
-- **Fuel:** the beacon has a chest-like inventory. "Add all fuel" moves fuel from your inventory into it, "Feed beacon"
-  turns it into fuel. Wood 1, Core wood 1.2, Ancient bark 1.4, Fine wood 1.6, Yggdrasil wood / Ashwood 1.8, Coal 2.5,
-  Surtling core 50, Sap 25, Black core 100, and more (configurable).
-- **Cost per ring** rises evenly to one "stack" (50 fuel) at the optimal range, then by one stack more for every ring
-  past it, times the tier's fuel ratio.
-- **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need, exploring range, fuel range,
-  fuel depletion countdown, and warnings for limit overreach and an island that is fully explored.
+- The model is a recoloured Obliterator; wisps circle a working beacon, red and pulsing wisps indicate it has passed its optimal range.
+- **Mapping:** circling outwards over non-ocean biomes. The ocean is the limit: one beacon
+  maps one island and never the sea around it. Rings the builder had already explored are not counted in fuel cost.
+- **Fuel:** Add different fuel from inventory in the beacon. "Add all fuel" moves all possible fuel from your inventory into it. Untill you press "Feed beacon" you can take it out afterwards all fuel is permanently part of the beacon and is lost when it is moved.
+- **Fuel ratio:** The higher tier beacons use fuel more efficiently. 
+- **Cost ** the minimum size the game sets as explored is an ingame 12x12m square. Each ring made out of 12x12m squares slowly raises the cost untill the final ring costs 50 fuel (1 stack of wood) to explore. Any information beyond that will double the cost.
+- **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need (max. exploration within optimal range), exploring range (how for away it is exploring), fuel range (how far the fuel will get the exploration),
+  fuel depletion countdown (how long the beacon will keep working), warnings for limit overreach and a message that nothing further can be explored.
+
+## Fuel
+
+In this overview you can see how much fuel you get from each resource.
+
+| Resource | Fuel |
+|---|---|
+| Wood | 1 |
+| Core wood | 1.2 |
+| Ancient bark | 1.4 |
+| Resin | 1.5 |
+| Fine wood | 1.6 |
+| Yggdrasil wood | 1.8 |
+| Ashwood | 1.8 |
+| Greydwarf eye | 2 |
+| Coal | 2.5 |
+| Charcoal resin | 3 |
+| Guck | 5 |
+| Tar | 8 |
+| Soft tissue | 10 |
+| Sulfur | 12 |
+| Wisp | 15 |
+| Sap | 25 |
+| Refined eitr | 40 |
+| Surtling core | 50 |
+| Black core | 100 |
 
 ## Screenshots
 
