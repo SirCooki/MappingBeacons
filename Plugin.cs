@@ -16,7 +16,7 @@ namespace ScoutingBeacons
     {
         public const string PluginGUID = "SirCookie.ScoutingBeacons";
         public const string PluginName = "Valdar - Beacons that map";
-        public const string PluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0.2";
 
         public const string BasePrefab = "incinerator"; // the Obliterator
 
@@ -56,6 +56,7 @@ namespace ScoutingBeacons
                 Description = tier.Description,
                 PieceTable = PieceTables.Hammer,
                 Category = PieceCategories.Misc,
+                CraftingStation = CraftingStations.Workbench, // all tiers: only a workbench nearby (user, 2026-11-02)
             };
             foreach (var req in tier.Cost)
                 config.AddRequirement(new RequirementConfig(req.Item, req.Amount, 0, true));

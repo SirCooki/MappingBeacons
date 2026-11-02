@@ -131,11 +131,23 @@ namespace ScoutingBeacons
             "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
             "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
             "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest";
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone";
 
         // Location lists shipped by earlier versions: replaced by the current default when still unchanged
         private static readonly string[] OldDefaultLocations =
         {
+            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
+            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
+            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
+            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
+            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit",
+            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
+            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
+            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
+            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
+            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
+            "FireHole=Fire hole, DrakeNest=Drake nest",
             "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
             "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
             "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +

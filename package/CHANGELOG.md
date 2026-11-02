@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+- All beacons are built at the workbench.
+- Status panel shows how much of the optimal range is explored, as a percentage.
+- Silver and black metal beacons also mark tar pits, shipwrecks and runestones.
+
 ## 1.0.1
 - "Block automatic feeding" now also keeps AzuAutoStore and AzuCraftyBoxes away from beacons.
 - Fuel overview table in the description.

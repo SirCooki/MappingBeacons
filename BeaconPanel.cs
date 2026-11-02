@@ -295,6 +295,7 @@ namespace ScoutingBeacons
             s.AppendLine(pending > 0f ? $"Fuel:  <b>{b.Fuel:0.#}</b>  (+{pending:0.#})" : $"Fuel:  <b>{b.Fuel:0.#}</b>");
             s.AppendLine($"Theoretical fuel need:  <b>{fullNeed:0}</b>  (for {t.LimitKm2.Value:0.##} km²)");
             s.AppendLine($"Exploring range:  <b>{b.Ring * w:0} m</b>");
+            s.AppendLine($"Optimal range explored:  <b>{b.OptimalExplored() * 100f:0}%</b>");
             int extra = after.Ring - now.Ring;
             s.AppendLine(pending > 0f && extra > 0
                 ? $"Fuel range:  <b>{now.Ring * w:0} m</b>  (+{extra * w:0} m)"

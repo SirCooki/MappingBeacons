@@ -137,6 +137,20 @@ namespace ScoutingBeacons
                 Jotunn.Logger.LogInfo($"{Tier.DisplayName}: {known} rings already on the builder's map, skipped");
         }
 
+        /// Share (0..1) of the land within the optimal range (up to the coast) that has been explored: finished rings
+        /// plus the rings the builder already knew. An island smaller than the optimal range reaches 100% at the coast.
+        public float OptimalExplored()
+        {
+            int limit = Tier.LimitRing, done = 0, total = 0;
+            for (int n = 1; n <= limit; n++)
+            {
+                int cells = Land.CellsInRing(n);
+                total += cells;
+                if (n <= Ring || IsKnown(n)) done += cells;
+            }
+            return total == 0 ? 1f : (float)done / total;
+        }
+
         /// Fuel for rings 1 to the area limit, without the rings the builder already knew.
         public float FuelToLimit()
         {

@@ -17,8 +17,8 @@ Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBea
   maps one island and never the sea around it. Rings the builder had already explored are not counted in fuel cost.
 - **Fuel:** Add different fuel from inventory in the beacon. "Add all fuel" moves all possible fuel from your inventory into it. Untill you press "Feed beacon" you can take it out afterwards all fuel is permanently part of the beacon and is lost when it is moved.
 - **Fuel ratio:** The higher tier beacons use fuel more efficiently. 
-- **Cost ** the minimum size the game sets as explored is an ingame 12x12m square. Each ring made out of 12x12m squares slowly raises the cost untill the final ring costs 50 fuel (1 stack of wood) to explore. Any information beyond that will double the cost.
-- **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need (max. exploration within optimal range), exploring range (how for away it is exploring), fuel range (how far the fuel will get the exploration),
+- **Cost:** the minimum size the game sets as explored is an ingame 12x12m square. Each ring made out of 12x12m squares slowly raises the cost untill the final ring costs 50 fuel (1 stack of wood) to explore. Beyond the optimal range every next ring costs one stack more than the one before (2, 3, 4 stacks ...).
+- **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need (max. exploration within optimal range), exploring range (how for away it is exploring), optimal range explored (percentage of the land within the optimal range that is mapped), fuel range (how far the fuel will get the exploration),
   fuel depletion countdown (how long the beacon will keep working), warnings for limit overreach and a message that nothing further can be explored.
 
 ## Fuel
@@ -74,7 +74,7 @@ In this overview you can see how much fuel you get from each resource.
 ## Markers
 
 - **Locations** (silver and black metal): burial chambers, troll and frost caves, sunken crypts, villages, infested
-  mines, charred fortresses, Morgen holes, fire holes, drake nests and more. Optional: boss altars, each trader
+  mines, charred fortresses, Morgen holes, fire holes, drake nests, tar pits, shipwrecks, runestones and more. Optional: boss altars, each trader
   (Haldor, Hildir, Bog Witch, Altar of Potential: the placed one, or every possible spot until it's placed), forts,
   Ashlands fortress ruins.
 - **Ores** (black metal): copper (Cu), scrap iron (Fe), silver (Ag), flametal and brains; tin (Tn) and obsidian
