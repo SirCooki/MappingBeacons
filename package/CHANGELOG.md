@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.4 - UI + icon improvements
+- Status panel reorganised: Available Fuel, Remaining fuel for optimal range, Fuel depletion countdown, Current range
+  from beacon, Optimal zone progress. "Remaining fuel" counts fuel waiting in the slots and warns when the optimal
+  range will be or has been exceeded.
+- The button is now "Fuel the beacon"; the first time a beacon gets fuel: "The beacon is lit, hope remains."
+- Pins you delete from your map stay deleted when you open a beacon again ("Keep deleted pins deleted", on).
+- Every point of interest has its own switch in the new "07 - Locations" config section, plus "Extra locations" for
+  your own additions. The defaults are the same as before.
+- Taking a beacon down with the hammer returns its build materials again; fed fuel is not returned.
+
 ## 1.0.3
 - New location markers (silver and black metal): stone towers, tower ruins, the Mountains lorestone, sacrificial
   stones, dolmens, stone circles and henges, Dvergr towers and harbours, charred towers.

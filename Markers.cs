@@ -35,7 +35,7 @@ namespace ScoutingBeacons
             foreach (var instance in ZoneSystem.instance.m_locationInstances.Values)
             {
                 string name = Name(instance);
-                if (name.Length > 0 && Settings.LocationLabel(name) == null && Settings.TraderFor(name) == null &&
+                if (name.Length > 0 && Settings.LocationLabel(name) == null && !Settings.IsKnownPoi(name) && Settings.TraderFor(name) == null &&
                     Settings.OreLocationLabel(name) == null) unmatched.Add(name);
             }
             Jotunn.Logger.LogInfo($"Location types without a marker ({unmatched.Count}): {string.Join(", ", unmatched)}");
@@ -119,7 +119,7 @@ namespace ScoutingBeacons
                 string label = Settings.LocationLabel(name);
                 if (label != null) found.Add(new KeyValuePair<string, Vector3>(label, instance.m_position));
                 else if (Settings.OreLocationLabel(name) == null && s_unmatchedLogged.Add(name))
-                    Jotunn.Logger.LogInfo($"Location '{name}' isn't marked (add it to 06 - Markers / Locations to pin it)");
+                    Jotunn.Logger.LogInfo($"Location '{name}' isn't marked (add it to 07 - Locations / Extra locations to pin it)");
             }
         }
 
@@ -190,6 +190,7 @@ namespace ScoutingBeacons
             int count = pkg.ReadInt();
             var placed = new List<KeyValuePair<string, Vector3>>();
             int added = 0;
+            bool rememberedOnly = false;
             for (int i = 0; i < count; i++)
             {
                 string label = pkg.ReadString();
@@ -197,17 +198,73 @@ namespace ScoutingBeacons
                 if (!beacon.Land.Scouted(pos, beacon.Ring)) continue; // only on land this beacon has scouted
                 bool ore = Settings.OreMarkers.ContainsValue(label) || Settings.OreLocations.ContainsValue(label);
                 float merge = ore ? SameOreDistance : 5f;
-                if (placed.Exists(p => p.Key == label && Near(p.Value, pos, merge)) || HasPin(map, label, pos, merge)) continue;
+                if (placed.Exists(p => p.Key == label && Near(p.Value, pos, merge))) continue;
+                if (Settings.KeepDeletedPins.Value && Given(label, pos, merge)) continue; // pinned before: deleted pins stay deleted
+                if (HasPin(map, label, pos, merge))
+                {
+                    Remember(label, pos); // already on the map (e.g. from an older version): deleting it later sticks too
+                    placed.Add(new KeyValuePair<string, Vector3>(label, pos));
+                    rememberedOnly = true;
+                    continue;
+                }
                 bool predicted = PredictedSuffix.Length > 0 && label.EndsWith(PredictedSuffix);
                 string real = predicted ? label.Substring(0, label.Length - PredictedSuffix.Length) : label;
                 if (predicted && HasPin(map, real, pos, merge)) continue; // the real deposit is already pinned
                 if (ore && !predicted && PredictedSuffix.Length > 0) RemovePins(map, label + PredictedSuffix, pos, merge); // real one replaces the guess
                 placed.Add(new KeyValuePair<string, Vector3>(label, pos));
                 map.AddPin(pos, ore ? Minimap.PinType.Icon3 : Minimap.PinType.Icon2, label, true, false, 0L, default);
+                Remember(label, pos);
                 added++;
             }
+            if (added > 0 || rememberedOnly) SaveGiven();
             if (added > 0)
+            {
                 Player.m_localPlayer.Message(MessageHud.MessageType.TopLeft, $"{beacon.Tier.DisplayName}: {added} new markers");
+            }
+        }
+
+        // ---- pins already given to this character (user, 2026-11-04: a pin the player deleted never comes back) ----
+        // Kept in the character's own save (Player.m_customData), so it follows the character to every world and server.
+
+        private const string GivenKey = "ScoutingBeacons_pins";
+        private static Player s_givenFor;
+        private static readonly List<KeyValuePair<string, Vector3>> s_given = new List<KeyValuePair<string, Vector3>>();
+
+        private static void LoadGiven()
+        {
+            var player = Player.m_localPlayer;
+            if (s_givenFor == player) return;
+            s_givenFor = player;
+            s_given.Clear();
+            if (!player || !player.m_customData.TryGetValue(GivenKey, out string text)) return;
+            foreach (string entry in text.Split('\n'))
+            {
+                var parts = entry.Split('|');
+                if (parts.Length == 3 && int.TryParse(parts[1], out int x) && int.TryParse(parts[2], out int z))
+                    s_given.Add(new KeyValuePair<string, Vector3>(parts[0], new Vector3(x, 0f, z)));
+            }
+        }
+
+        private static bool Given(string label, Vector3 pos, float distance)
+        {
+            LoadGiven();
+            return s_given.Exists(g => g.Key == label && Near(g.Value, pos, distance));
+        }
+
+        private static void Remember(string label, Vector3 pos)
+        {
+            LoadGiven();
+            s_given.Add(new KeyValuePair<string, Vector3>(label, new Vector3(Mathf.Round(pos.x), 0f, Mathf.Round(pos.z))));
+        }
+
+        private static void SaveGiven()
+        {
+            var player = Player.m_localPlayer;
+            if (!player) return;
+            var text = new System.Text.StringBuilder();
+            foreach (var g in s_given)
+                text.Append(g.Key.Replace("|", "/")).Append('|').Append((int)g.Value.x).Append('|').Append((int)g.Value.z).Append('\n');
+            player.m_customData[GivenKey] = text.ToString().TrimEnd('\n');
         }
 
         private static void RemovePins(Minimap map, string label, Vector3 pos, float distance)

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace ScoutingBeacons
 {
     /// Status and preview panel to the right of the vanilla container window while a beacon is open.
-    /// Buttons in two columns around the title (Take all / Place stacks left, Add all fuel / Feed beacon right); the
+    /// Buttons in two columns around the title (Take all / Place stacks left, Add all fuel / Fuel the beacon right); the
     /// window grows by one button row while a beacon is open and is restored afterwards.
     public class BeaconPanel : MonoBehaviour
     {
@@ -83,7 +83,7 @@ namespace ScoutingBeacons
             m_text.color = Color.white;
 
             m_addFuelButton = CopyButton(gui, "Add all fuel", OnAddAllFuel);
-            m_feedButton = CopyButton(gui, "Feed beacon", OnFeed);
+            m_feedButton = CopyButton(gui, "Fuel the beacon", OnFeed);
             gameObject.SetActive(false);
         }
 
@@ -131,12 +131,12 @@ namespace ScoutingBeacons
             if (!m_beacon) return;
             float added = m_beacon.Feed(dropOthers: false);
             if (added > 0f && Player.m_localPlayer)
-                Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"+{added:0.#} fuel");
+                if (!m_beacon.JustLit) Player.m_localPlayer.Message(MessageHud.MessageType.Center, $"+{added:0.#} fuel");
             m_timer = 0f;
         }
 
         /// Like a two-row table:   [Take all]      (title)     [Add all fuel]
-        ///                          [Place stacks]              [Feed beacon]
+        ///                          [Place stacks]              [Fuel the beacon]
         /// with the title centred on the line between the rows, and the slots right under the second row.
         private void Layout()
         {
@@ -283,7 +283,6 @@ namespace ScoutingBeacons
             var now = b.Predict(b.Fuel);
             var after = b.Predict(b.Fuel + pending);
             int tier = BeaconTiers.All.IndexOf(t) + 1;
-            float fullNeed = b.FuelToLimit(); // rings the builder already knew are free
             string state = b.CoastReached ? $"<color={Blue}>coast reached</color>"
                 : b.Active ? "<color=#7CFC7C>exploring</color>" : $"<color={Red}>waiting for fuel</color>";
 
@@ -292,18 +291,28 @@ namespace ScoutingBeacons
             s.AppendLine($"<color={Grey}>Map beacon tier {tier}  ·  optimal range {t.LimitKm2.Value:0.##} km²  ·  " +
                          $"fuel ratio {t.Efficiency.Value:0.##}</color>");
             s.AppendLine();
-            s.AppendLine(pending > 0f ? $"Fuel:  <b>{b.Fuel:0.#}</b>  (+{pending:0.#})" : $"Fuel:  <b>{b.Fuel:0.#}</b>");
-            s.AppendLine($"Theoretical fuel need:  <b>{fullNeed:0}</b>  (for {t.LimitKm2.Value:0.##} km²)");
-            s.AppendLine($"Exploring range:  <b>{b.Ring * w:0} m</b>");
-            s.AppendLine($"Optimal range explored:  <b>{b.OptimalExplored() * 100f:0}%</b>");
-            int extra = after.Ring - now.Ring;
-            s.AppendLine(pending > 0f && extra > 0
-                ? $"Fuel range:  <b>{now.Ring * w:0} m</b>  (+{extra * w:0} m)"
-                : $"Fuel range:  <b>{now.Ring * w:0} m</b>");
+            // Order (user, 2026-11-03): available fuel, remaining fuel, countdown, current range, zone progress, warnings
+            s.AppendLine(pending > 0f ? $"Available Fuel:  <b>{b.Fuel:0.#}</b>  (+{pending:0.#})" : $"Available Fuel:  <b>{b.Fuel:0.#}</b>");
+            // Fuel still to add for the rest of the optimal range (user wording, 2026-11-03): what's left to pay minus
+            // what's stored; fuel items in the slots (not fed yet) are counted live as they're put in
+            const string remaining = "Remaining fuel for optimal range:  ";
+            float stillToPay = b.FuelToFinishOptimal() - b.Fuel;
+            if (b.Ring >= limit)
+                s.AppendLine(remaining + $"<color={Amber}>Optimal range has been crossed</color>");
+            else if (stillToPay <= 0f)
+                s.AppendLine(remaining + $"<color={Amber}>Range will be exceeded by {-stillToPay:0} stored fuel</color>");
+            else if (pending <= 0f)
+                s.AppendLine(remaining + $"<b>{stillToPay:0}</b>");
+            else if (pending < stillToPay)
+                s.AppendLine(remaining + $"<b>{stillToPay - pending:0}</b>  ({pending:0} fuel present in inventory)");
+            else
+                s.AppendLine(remaining + $"<color={Amber}>Range will be exceeded by {pending - stillToPay:0} fuel in inventory</color>");
             if (now.Seconds > 0.0)
                 s.AppendLine(now.Coast
                     ? $"Coast reached in:  <b>{Clock(now.Seconds)}</b>"
                     : $"Fuel depletion countdown:  <b>{Clock(now.Seconds)}</b>");
+            s.AppendLine($"Current range from beacon:  <b>{b.Ring * w:0} m</b>");
+            s.AppendLine($"Optimal zone progress:  <b>{b.OptimalExplored() * 100f:0}%</b>");
 
             float limitRange = limit * w;
             if (b.Ring > limit)

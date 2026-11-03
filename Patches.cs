@@ -62,16 +62,26 @@ namespace ScoutingBeacons
             if (beacon) beacon.Feed(dropOthers: true);
         }
 
-        // Destroyed by damage (health gone): no build materials back unless the setting allows it.
-        // Taking it down with the hammer keeps its health, so that still returns them.
+        // Taken down with the hammer: always the build materials back. Destroyed any other way (damage, collapse):
+        // only when "Drop resources on destroy" is on. Fuel already fed is never returned (it isn't an item any more).
+        // The hammer goes through WearNTear.RPC_Remove, which sets health to 0 before DropResources, so removal is
+        // recognised by that call instead of by the health.
+        private static WearNTear s_removing;
+
+        [HarmonyPatch(typeof(WearNTear), nameof(WearNTear.RPC_Remove))]
+        [HarmonyPrefix]
+        private static void RemoveStart(WearNTear __instance) => s_removing = __instance;
+
+        [HarmonyPatch(typeof(WearNTear), nameof(WearNTear.RPC_Remove))]
+        [HarmonyFinalizer]
+        private static void RemoveEnd() => s_removing = null;
+
         [HarmonyPatch(typeof(Piece), nameof(Piece.DropResources))]
         [HarmonyPrefix]
         private static bool DropResources(Piece __instance)
         {
             if (Settings.DropResourcesOnDestroy.Value || !__instance.GetComponent<Beacon>()) return true;
-            var wnt = __instance.GetComponent<WearNTear>();
-            var zdo = wnt && wnt.m_nview && wnt.m_nview.IsValid() ? wnt.m_nview.GetZDO() : null;
-            return zdo == null || zdo.GetFloat(ZDOVars.s_health, wnt.m_health) > 0f;
+            return s_removing && s_removing.gameObject == __instance.gameObject;
         }
     }
 }

@@ -10,6 +10,11 @@ namespace ScoutingBeacons
         private const string FuelKey = "sb_fuel", RingKey = "sb_ring", PaidKey = "sb_paid", ProgressKey = "sb_prog",
             LastKey = "sb_last", ActiveKey = "sb_active", CoastKey = "sb_coast";
         private const float TickSeconds = 1f;
+        private const string LitKey = "sb_lit";
+        private const string LitMessage = "The beacon is lit, hope remains.";
+
+        /// True right after the feed that lit this beacon (the window then skips its "+N fuel" message).
+        public bool JustLit { get; private set; }
         private const string ChestButlerManualOnly = "psort_manual";
 
         public static readonly List<Beacon> Instances = new List<Beacon>();
@@ -151,6 +156,21 @@ namespace ScoutingBeacons
             return total == 0 ? 1f : (float)done / total;
         }
 
+        /// Fuel the rings still ahead up to the optimal range cost (stopping at the coast), without the ring that is
+        /// already paid and the rings the builder already knew. The stored fuel isn't subtracted here.
+        public float FuelToFinishOptimal()
+        {
+            float total = 0f;
+            int limit = Tier.LimitRing;
+            for (int n = Ring + 1; n <= limit; n++)
+            {
+                if (!Land.HasMoreAfter(n - 1)) break; // the coast comes first
+                if (n == Ring + 1 && Paid) continue;
+                total += RingCost(n);
+            }
+            return total;
+        }
+
         /// Fuel for rings 1 to the area limit, without the rings the builder already knew.
         public float FuelToLimit()
         {
@@ -165,6 +185,7 @@ namespace ScoutingBeacons
         public float Feed(bool dropOthers)
         {
             var inventory = m_container ? m_container.GetInventory() : null;
+            JustLit = false;
             if (inventory == null || Zdo == null) return 0f;
             if (!m_nview.IsOwner()) m_nview.ClaimOwnership();
             float added = 0f;
@@ -187,6 +208,13 @@ namespace ScoutingBeacons
                 Zdo.Set(FuelKey, Fuel + added);
                 if (Zdo.GetLong(LastKey) == 0) Zdo.Set(LastKey, (long)ZNet.instance.GetTimeSeconds());
                 m_timer = TickSeconds; // pay the next ring straight away
+                // The first time this beacon gets fuel (user, 2026-11-03): once per beacon, for the player fuelling it
+                if (Zdo.GetInt(LitKey) == 0)
+                {
+                    Zdo.Set(LitKey, 1);
+                    JustLit = true;
+                    Player.m_localPlayer?.Message(MessageHud.MessageType.Center, LitMessage);
+                }
             }
             return added;
         }

@@ -15,11 +15,10 @@ Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBea
 - The model is a recoloured Obliterator; wisps circle a working beacon, red and pulsing wisps indicate it has passed its optimal range.
 - **Mapping:** circling outwards over non-ocean biomes. The ocean is the limit: one beacon
   maps one island and never the sea around it. Rings the builder had already explored are not counted in fuel cost.
-- **Fuel:** Add different fuel from inventory in the beacon. "Add all fuel" moves all possible fuel from your inventory into it. Untill you press "Feed beacon" you can take it out afterwards all fuel is permanently part of the beacon and is lost when it is moved.
+- **Fuel:** Add different fuel from inventory in the beacon. "Add all fuel" moves all possible fuel from your inventory into it. Untill you press "Fuel the beacon" you can take it out afterwards all fuel is permanently part of the beacon and is lost when it is moved.
 - **Fuel ratio:** The higher tier beacons use fuel more efficiently. 
 - **Cost:** the minimum size the game sets as explored is an ingame 12x12m square. Each ring made out of 12x12m squares slowly raises the cost untill the final ring costs 50 fuel (1 stack of wood) to explore. Beyond the optimal range every next ring costs one stack more than the one before (2, 3, 4 stacks ...).
-- **Status panel:** fuel (plus what's waiting in the inventory), theoretical fuel need (max. exploration within optimal range), exploring range (how for away it is exploring), optimal range explored (percentage of the land within the optimal range that is mapped), fuel range (how far the fuel will get the exploration),
-  fuel depletion countdown (how long the beacon will keep working), warnings for limit overreach and a message that nothing further can be explored.
+- **Status panel:** available fuel (plus what's waiting in the inventory), remaining fuel for optimal range (how much more fuel the rest of the optimal range takes, or by how much it will be exceeded), fuel depletion countdown (how long the beacon will keep working), current range from beacon (how far away it is exploring), optimal zone progress (percentage of the land within the optimal range that is mapped), warnings for limit overreach and a message that nothing further can be explored.
 
 ## Fuel
 
@@ -76,7 +75,7 @@ In this overview you can see how much fuel you get from each resource.
 - **Locations** (silver and black metal): burial chambers, troll and frost caves, sunken crypts, villages, infested
   mines, charred fortresses, Morgen holes, fire holes, drake nests, tar pits, shipwrecks, runestones, stone towers, tower ruins, the Mountains lorestone, sacrificial stones, dolmens, stone circles and henges, Dvergr towers and harbours, charred towers and more. Optional: boss altars, each trader
   (Haldor, Hildir, Bog Witch, Altar of Potential: the placed one, or every possible spot until it's placed), forts,
-  Ashlands fortress ruins.
+  Ashlands fortress ruins. Every point of interest has its own switch in the config section "07 - Locations".
 - **Ores** (black metal): copper (Cu), scrap iron (Fe), silver (Ag), flametal and brains; tin (Tn) and obsidian
   optional. Ore in areas nobody has visited doesn't exist yet in Valheim, so the mod predicts it from the world seed
   by replaying the game's own placement; areas that exist use the real deposits.

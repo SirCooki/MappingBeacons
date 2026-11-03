@@ -18,6 +18,7 @@ namespace ScoutingBeacons
         public static ConfigEntry<int> CoastBuffer;
         public static ConfigEntry<bool> PredictOres;
         public static ConfigEntry<bool> BlockAutoFeeding;
+        public static ConfigEntry<bool> KeepDeletedPins;
         private static ConfigEntry<string> s_fuelValues;
 
         public const string DefaultFuel =
@@ -30,7 +31,7 @@ namespace ScoutingBeacons
             const string general = "01 - General";
             ConvertOnClose = config.Bind(general, "Convert on close", false,
                 Server("Closing the beacon's window turns its fuel items into fuel and drops everything that isn't fuel. " +
-                       "Off: only the \"Feed beacon\" button converts; other items stay in the beacon like a chest."));
+                       "Off: only the \"Fuel the beacon\" button converts; other items stay in the beacon like a chest."));
             DropResourcesOnDestroy = config.Bind(general, "Drop resources on destroy", false,
                 Server("A beacon destroyed by damage drops its build materials. Taking it down with the hammer always returns them."));
             MobsTargetBeacon = config.Bind(general, "Mobs target beacons", false,
@@ -73,20 +74,23 @@ namespace ScoutingBeacons
             }
 
             const string markers = "06 - Markers";
-            s_locationMarkers = config.Bind(markers, "Locations", DefaultLocations,
-                Server("Location name start = pin label. A location is pinned when its name starts with one of these. " +
-                       "Locations that match nothing are listed once in the server log, to add them here."));
             s_oreMarkers = config.Bind(markers, "Ores", DefaultOres,
                 Server("Ore deposit prefab = pin label."));
-            s_locationMarkers.SettingChanged += (_, __) => s_locations = null;
             s_oreMarkers.SettingChanged += (_, __) => s_ores = null;
             if (System.Array.IndexOf(OldDefaultOres, s_oreMarkers.Value) >= 0) s_oreMarkers.Value = DefaultOres; // untouched old default
-            if (System.Array.IndexOf(OldDefaultLocations, s_locationMarkers.Value) >= 0) s_locationMarkers.Value = DefaultLocations;
-            s_markFortressRuins = config.Bind(markers, "Mark fortress ruins", false,
-                Server("Also pin the Ashlands fortress ruins (there are many)."));
-            s_markFortressRuins.SettingChanged += (_, __) => s_locations = null;
-            s_markBosses = config.Bind(markers, "Mark boss altars", false,
-                Server("Also pin boss altars (Eikthyr, The Elder, Bonemass, Moder, Yagluth, Fader)."));
+
+            // One switch per point of interest (user, 2026-11-04), pinned by tiers with "Mark locations" on
+            const string locations = "07 - Locations";
+            foreach (var poi in Pois)
+            {
+                poi.Enabled = config.Bind(locations, poi.Label, poi.Default,
+                    Server($"Pin {poi.Label} ({poi.Biome}; location names starting with {string.Join(" / ", poi.Prefixes)})."));
+                poi.Enabled.SettingChanged += (_, __) => s_locations = null;
+            }
+            s_extraLocations = config.Bind(locations, "Extra locations", "",
+                Server("Your own additions: location name start = pin label, comma-separated (e.g. \"SwampHut=Swamp hut\"). " +
+                       "Location types nothing marks are listed once in the server log."));
+            s_extraLocations.SettingChanged += (_, __) => s_locations = null;
             foreach (var trader in Traders)
                 trader.Enabled = config.Bind(markers, "Mark " + trader.Label, false,
                     Server($"Also pin {trader.Label}. Until the game has placed them, every possible spot is pinned as \"{trader.Label} (possible)\"; " +
@@ -95,9 +99,6 @@ namespace ScoutingBeacons
                 Server("Locations that hold ore (name start = pin label), pinned with the ores: flametal in lava leviathans, " +
                        "brains in giant skeletons. Known for the whole world, so no prediction needed."));
             s_oreLocations.SettingChanged += (_, __) => s_oreLocationMap = null;
-            s_markOthers = config.Bind(markers, "Mark other locations", false,
-                Server("Also pin forts, infested (guck) trees and greydwarf camps."));
-            foreach (var e in new[] { s_markBosses, s_markOthers }) e.SettingChanged += (_, __) => s_locations = null;
             s_markObsidian = config.Bind(markers, "Mark obsidian", false,
                 Server("Also pin obsidian deposits (with ores, on tiers that mark ores). Off by default: obsidian is common."));
             s_markObsidian.SettingChanged += (_, __) => s_ores = null;
@@ -107,6 +108,9 @@ namespace ScoutingBeacons
             PredictOres = config.Bind(markers, "Predict ores", true,
                 Server("In areas nobody has been near yet, ore deposits don't exist yet: work out where the game will put " +
                        "them from the world seed and pin those too. A few may be off or missing."));
+            KeepDeletedPins = config.Bind(markers, "Keep deleted pins deleted", true,
+                Server("A pin a beacon gave you once is never added again, so a pin you remove from your map stays removed. " +
+                       "Off: opening a beacon puts back every pin that's missing. Remembered per character."));
         }
 
         // Ore lists shipped by earlier versions: replaced by the current default when still unchanged
@@ -125,73 +129,85 @@ namespace ScoutingBeacons
             "FlametalRockstand=Flametal, giant_brain=Soft tissue, giant_brain_frac=Soft tissue",
         };
 
-        public const string DefaultLocations =
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
-            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins, DrakeLorestone=Lorestone, " +
-            // stone sites (user, 2026-11-03: every runestone-type place, bigger POIs, places that can hold a boss pointer)
-            "StartTemple=Sacrificial stones, Dolmen=Dolmen, StoneCircle=Stone circle, StoneHenge=Stone henge, " +
-            "Mistlands_GuardTower=Dvergr tower, Mistlands_Harbour=Dvergr harbour, CharredTowerRuins=Charred tower";
-
-        // Location lists shipped by earlier versions: replaced by the current default when still unchanged
-        private static readonly string[] OldDefaultLocations =
+        /// A point of interest: location types whose name starts with one of the prefixes get this pin label.
+        public class Poi
         {
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
-            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins, DrakeLorestone=Lorestone",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
-            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FortressRuins=Fortress ruins, FireHole=Fire hole, DrakeNest=Drake nest",
-            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
-            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
-            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
-            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
-            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FortressRuins=Fortress ruins",
+            public string Label, Biome;
+            public string[] Prefixes;
+            public bool Default;
+            public ConfigEntry<bool> Enabled;
+            public Poi(string label, string biome, bool on, params string[] prefixes) { Label = label; Biome = biome; Default = on; Prefixes = prefixes; }
+        }
+
+        // Every known point of interest up to the Ashlands (no Deep North until the user has played it). Defaults = the
+        // selection as of 1.0.3 (user, 2026-11-04). Order = the order in the config file.
+        public static readonly Poi[] Pois =
+        {
+            // Dungeons and big sites
+            new Poi("Burial chamber", "Black Forest", true, "Crypt"),
+            new Poi("Troll cave", "Black Forest", true, "TrollCave"),
+            new Poi("Sunken crypt", "Swamp", true, "SunkenCrypt"),
+            new Poi("Frost cave", "Mountains", true, "MountainCave"),
+            new Poi("Fuling village", "Plains", true, "GoblinCamp"),
+            new Poi("Draugr village", "Meadows", true, "WoodVillage"),
+            new Poi("Smouldering tomb", "Black Forest", true, "Hildir_crypt"),
+            new Poi("Howling cavern", "Mountains", true, "Hildir_cave"),
+            new Poi("Sealed tower", "Plains", true, "Hildir_plainsfortress"),
+            new Poi("Infested mine", "Mistlands", true, "Mistlands_DvergrTownEntrance"),
+            new Poi("Sealed mine", "Mistlands", true, "Mistlands_DvergrBossEntrance"),
+            new Poi("Dvergr excavation", "Mistlands", true, "Mistlands_Excavation"),
+            new Poi("Dvergr tower", "Mistlands", true, "Mistlands_GuardTower"),
+            new Poi("Dvergr harbour", "Mistlands", true, "Mistlands_Harbour"),
+            new Poi("Charred fortress", "Ashlands", true, "CharredFortress"),
+            new Poi("Charred tower", "Ashlands", true, "CharredTowerRuins"),
+            new Poi("Morgen hole", "Ashlands", true, "MorgenHole"),
+            new Poi("Place of mystery", "Ashlands", true, "PlaceofMystery"),
+            new Poi("Fortress ruins", "Ashlands", false, "FortressRuins"),
+            // Stones, towers and boss pointers
+            new Poi("Runestone", "every biome", true, "Runestone"),
+            new Poi("Lorestone", "Mountains", true, "DrakeLorestone"),
+            new Poi("Sacrificial stones", "Meadows", true, "StartTemple"),
+            new Poi("Dolmen", "Meadows", true, "Dolmen"),
+            new Poi("Stone circle", "Meadows", true, "StoneCircle"),
+            new Poi("Stone henge", "Plains", true, "StoneHenge"),
+            new Poi("Stone tower", "Black Forest", true, "StoneTower"),
+            new Poi("Tower ruins", "Meadows / Plains", true, "StoneTowerRuins"),
+            // Resources and nests
+            new Poi("Fire hole", "Swamp", true, "FireHole"),
+            new Poi("Drake nest", "Mountains", true, "DrakeNest"),
+            new Poi("Tar pit", "Plains", true, "TarPit"),
+            new Poi("Sulfur arch", "Ashlands", false, "SulfurArch"),
+            new Poi("Volture nest", "Ashlands", false, "VoltureNest"),
+            new Poi("Infested tree", "Swamp", false, "InfestedTree"),
+            // Loot and smaller places
+            new Poi("Shipwreck", "coasts", true, "ShipWreck"),
+            new Poi("Greydwarf camp", "Black Forest", false, "Greydwarf_camp"),
+            new Poi("Fort", "Plains", false, "Fort1"),
+            new Poi("Abandoned farm", "Meadows", false, "WoodFarm"),
+            new Poi("Abandoned house", "Meadows", false, "WoodHouse"),
+            new Poi("Log cabin", "Mountains", false, "AbandonedLogCabin"),
+            new Poi("Stone house", "Black Forest", false, "StoneHouse"),
+            new Poi("Swamp hut", "Swamp", false, "SwampHut"),
+            new Poi("Swamp ruin", "Swamp", false, "SwampRuin"),
+            new Poi("Ruin", "Meadows / Black Forest", false, "Ruin"),
+            new Poi("Grave", "Black Forest / Mountains", false, "Grave1", "MountainGrave"),
+            new Poi("Well", "Mountains / Swamp", false, "MountainWell", "SwampWell"),
+            new Poi("Dvergr statue", "Mistlands", false, "Mistlands_Statue"),
+            new Poi("Giant swords", "Mistlands", false, "Mistlands_Swords"),
+            new Poi("Dvergr viaduct", "Mistlands", false, "Mistlands_Viaduct"),
+            new Poi("Rock spire", "Mistlands", false, "Mistlands_RockSpire"),
+            new Poi("Charred ruins", "Ashlands", false, "CharredRuins", "AshlandRuins"),
+            // Boss altars
+            new Poi("Eikthyr", "Meadows, boss altar", false, "Eikthyrnir"),
+            new Poi("The Elder", "Black Forest, boss altar", false, "GDKing"),
+            new Poi("Bonemass", "Swamp, boss altar", false, "Bonemass"),
+            new Poi("Moder", "Mountains, boss altar", false, "Dragonqueen"),
+            new Poi("Yagluth", "Plains, boss altar", false, "GoblinKing"),
+            new Poi("Fader", "Ashlands, boss altar", false, "FaderLocation"),
         };
 
-        // Optional location groups (switches in "06 - Markers"), location name start = label
-        private const string BossLocations =
-            "Eikthyrnir=Eikthyr, GDKing=The Elder, Bonemass=Bonemass, Dragonqueen=Moder, GoblinKing=Yagluth, FaderLocation=Fader";
-        private const string OtherLocations = "Fort1=Fort, InfestedTree=Infested tree, Greydwarf_camp=Greydwarf camp";
-        private const string FortressRuinsLocations = "FortressRuins=Fortress ruins";
-        private static ConfigEntry<bool> s_markBosses, s_markOthers, s_markFortressRuins;
+        private static ConfigEntry<string> s_extraLocations;
+
 
         /// A trader (or similar one-of-a-kind place) the game puts at one of several possible spots.
         public class Trader
@@ -232,7 +248,7 @@ namespace ScoutingBeacons
             "mudpile2_frac=Fe, silvervein=Ag, silvervein_frac=Ag, MineRock_Meteorite=Flametal, " +
             "FlametalRockstand=Flametal, giant_brain=Brains, giant_brain_frac=Brains";
 
-        private static ConfigEntry<string> s_locationMarkers, s_oreMarkers;
+        private static ConfigEntry<string> s_oreMarkers;
         private static ConfigEntry<bool> s_markTin;
         private const string TinPrefab = "MineRock_Tin";
         private static Dictionary<string, string> s_locations, s_ores;
@@ -242,11 +258,11 @@ namespace ScoutingBeacons
             get
             {
                 if (s_locations != null) return s_locations;
-                string text = s_locationMarkers.Value;
-                if (s_markBosses.Value) text += ", " + BossLocations;
-                if (s_markOthers.Value) text += ", " + OtherLocations;
-                if (s_markFortressRuins.Value) text += ", " + FortressRuinsLocations;
-                return s_locations = ParseLabels(text);
+                var map = ParseLabels(s_extraLocations.Value);
+                foreach (var poi in Pois)
+                    if (poi.Enabled.Value)
+                        foreach (var prefix in poi.Prefixes) map[prefix] = poi.Label;
+                return s_locations = map;
             }
         }
         private static ConfigEntry<bool> s_markObsidian;
@@ -273,6 +289,15 @@ namespace ScoutingBeacons
                 if (kv.Length == 2 && kv[0].Trim().Length > 0) map[kv[0].Trim()] = kv[1].Trim();
             }
             return map;
+        }
+
+        /// Is this location one of the listed points of interest (switched on or not)?
+        public static bool IsKnownPoi(string prefabName)
+        {
+            foreach (var poi in Pois)
+                foreach (var prefix in poi.Prefixes)
+                    if (prefabName.StartsWith(prefix)) return true;
+            return false;
         }
 
         /// Pin label for a location prefab name, or null when it isn't a marked location (longest matching start wins).
