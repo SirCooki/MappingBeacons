@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+- New location markers (silver and black metal): stone towers, tower ruins, the Mountains lorestone, sacrificial
+  stones, dolmens, stone circles and henges, Dvergr towers and harbours, charred towers.
+- Fader added to the optional boss altars.
+
 ## 1.0.2
 - All beacons are built at the workbench.
 - Status panel shows how much of the optimal range is explored, as a percentage.

@@ -86,7 +86,7 @@ namespace ScoutingBeacons
                 Server("Also pin the Ashlands fortress ruins (there are many)."));
             s_markFortressRuins.SettingChanged += (_, __) => s_locations = null;
             s_markBosses = config.Bind(markers, "Mark boss altars", false,
-                Server("Also pin boss altars (Eikthyr, The Elder, Bonemass, Moder, Yagluth)."));
+                Server("Also pin boss altars (Eikthyr, The Elder, Bonemass, Moder, Yagluth, Fader)."));
             foreach (var trader in Traders)
                 trader.Enabled = config.Bind(markers, "Mark " + trader.Label, false,
                     Server($"Also pin {trader.Label}. Until the game has placed them, every possible spot is pinned as \"{trader.Label} (possible)\"; " +
@@ -131,11 +131,35 @@ namespace ScoutingBeacons
             "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
             "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
             "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
-            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone";
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
+            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins, DrakeLorestone=Lorestone, " +
+            // stone sites (user, 2026-11-03: every runestone-type place, bigger POIs, places that can hold a boss pointer)
+            "StartTemple=Sacrificial stones, Dolmen=Dolmen, StoneCircle=Stone circle, StoneHenge=Stone henge, " +
+            "Mistlands_GuardTower=Dvergr tower, Mistlands_Harbour=Dvergr harbour, CharredTowerRuins=Charred tower";
 
         // Location lists shipped by earlier versions: replaced by the current default when still unchanged
         private static readonly string[] OldDefaultLocations =
         {
+            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
+            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
+            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
+            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
+            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
+            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins, DrakeLorestone=Lorestone",
+            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
+            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
+            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
+            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
+            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone, " +
+            "StoneTower=Stone tower, StoneTowerRuins=Tower ruins",
+            "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
+            "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
+            "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
+            "Mistlands_DvergrBossEntrance=Sealed mine, Mistlands_Excavation=Dvergr excavation, " +
+            "CharredFortress=Charred fortress, MorgenHole=Morgen hole, PlaceofMystery=Place of mystery, " +
+            "FireHole=Fire hole, DrakeNest=Drake nest, TarPit=Tar pit, ShipWreck=Shipwreck, Runestone=Runestone",
             "Crypt=Burial chamber, SunkenCrypt=Sunken crypt, TrollCave=Troll cave, MountainCave=Frost cave, " +
             "GoblinCamp=Fuling village, WoodVillage=Draugr village, Hildir_crypt=Smouldering tomb, " +
             "Hildir_cave=Howling cavern, Hildir_plainsfortress=Sealed tower, Mistlands_DvergrTownEntrance=Infested mine, " +
@@ -164,7 +188,7 @@ namespace ScoutingBeacons
 
         // Optional location groups (switches in "06 - Markers"), location name start = label
         private const string BossLocations =
-            "Eikthyrnir=Eikthyr, GDKing=The Elder, Bonemass=Bonemass, Dragonqueen=Moder, GoblinKing=Yagluth";
+            "Eikthyrnir=Eikthyr, GDKing=The Elder, Bonemass=Bonemass, Dragonqueen=Moder, GoblinKing=Yagluth, FaderLocation=Fader";
         private const string OtherLocations = "Fort1=Fort, InfestedTree=Infested tree, Greydwarf_camp=Greydwarf camp";
         private const string FortressRuinsLocations = "FortressRuins=Fortress ruins";
         private static ConfigEntry<bool> s_markBosses, s_markOthers, s_markFortressRuins;

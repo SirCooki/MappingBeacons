@@ -74,7 +74,7 @@ In this overview you can see how much fuel you get from each resource.
 ## Markers
 
 - **Locations** (silver and black metal): burial chambers, troll and frost caves, sunken crypts, villages, infested
-  mines, charred fortresses, Morgen holes, fire holes, drake nests, tar pits, shipwrecks, runestones and more. Optional: boss altars, each trader
+  mines, charred fortresses, Morgen holes, fire holes, drake nests, tar pits, shipwrecks, runestones, stone towers, tower ruins, the Mountains lorestone, sacrificial stones, dolmens, stone circles and henges, Dvergr towers and harbours, charred towers and more. Optional: boss altars, each trader
   (Haldor, Hildir, Bog Witch, Altar of Potential: the placed one, or every possible spot until it's placed), forts,
   Ashlands fortress ruins.
 - **Ores** (black metal): copper (Cu), scrap iron (Fe), silver (Ag), flametal and brains; tin (Tn) and obsidian
