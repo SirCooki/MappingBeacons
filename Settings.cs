@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using BepInEx.Configuration;
 using Jotunn.Configs;
@@ -18,6 +18,7 @@ namespace ScoutingBeacons
         public static ConfigEntry<int> CoastBuffer;
         public static ConfigEntry<bool> PredictOres;
         public static ConfigEntry<bool> BlockAutoFeeding;
+        public static ConfigEntry<bool> ShowBeam;
         public static ConfigEntry<bool> KeepDeletedPins;
         private static ConfigEntry<string> s_fuelValues;
 
@@ -49,6 +50,9 @@ namespace ScoutingBeacons
                        "into beacons, ChestButler and AzuAutoStore don't sort or store into them, and OttoFuel, AzuCraftyBoxes and " +
                        "ServersideQoL AutoProcess / TameAssist don't take items out of them. " +
                        "ServersideQoL picks up a change after a server restart."));
+            ShowBeam = config.Bind(general, "Show beacon light", true,
+                Server("A coloured light beam rises from a working beacon: yellow (bronze), white (silver), green (black metal), " +
+                       "red and pulsing past the area limit. The wisps take the same colour."));
             CoastBuffer = config.Bind(general, "Coast buffer", 1,
                 Server("Rings of ocean revealed along the coast so the shoreline doesn't look cut off.",
                     new AcceptableValueRange<int>(0, 5)));
@@ -354,6 +358,7 @@ namespace ScoutingBeacons
     {
         public string PieceName, DisplayName, Section, Description;
         public Color Tint;
+        public Color Glow; // beam and wisp colour while active
         public int Wisps;
         public float DefaultLimit, DefaultHours, DefaultEfficiency;
         public Requirement[] Cost;
@@ -392,7 +397,7 @@ namespace ScoutingBeacons
             {
                 PieceName = "sb_beacon_bronze", DisplayName = "Huginn's Cairn", Section = "03 - Bronze",
                 Description = "Huginn flies out over the land. Slow, but it sees everything on this island.",
-                Tint = new Color(1.25f, 0.8f, 0.45f), Wisps = 2,
+                Tint = new Color(1.25f, 0.8f, 0.45f), Wisps = 2, Glow = new Color(1f, 0.82f, 0.2f),
                 DefaultLimit = 1f, DefaultHours = 48f, DefaultEfficiency = 1f,
                 Cost = new[] { new Requirement("FineWood", 10), new Requirement("Bronze", 10) },
             },
@@ -400,7 +405,7 @@ namespace ScoutingBeacons
             {
                 PieceName = "sb_beacon_silver", DisplayName = "Muninn's Spire", Section = "04 - Silver",
                 Description = "Muninn remembers every hill and shore it passes.",
-                Tint = new Color(0.95f, 1.05f, 1.25f), Wisps = 4,
+                Tint = new Color(0.95f, 1.05f, 1.25f), Wisps = 4, Glow = new Color(0.95f, 0.97f, 1f),
                 DefaultLimit = 2f, DefaultHours = 18f, DefaultEfficiency = 0.9f, DefaultLocations = true,
                 Cost = new[] { new Requirement("Stone", 15), new Requirement("Silver", 15) },
             },
@@ -408,7 +413,7 @@ namespace ScoutingBeacons
             {
                 PieceName = "sb_beacon_blackmetal", DisplayName = "Allfather's Eye", Section = "05 - Black metal",
                 Description = "The Allfather's gaze sweeps the land.",
-                Tint = new Color(0.45f, 0.55f, 0.5f), Wisps = 8,
+                Tint = new Color(0.45f, 0.55f, 0.5f), Wisps = 8, Glow = new Color(0.3f, 1f, 0.4f),
                 DefaultLimit = 4f, DefaultHours = 6f, DefaultEfficiency = 0.75f, DefaultLocations = true, DefaultOres = true,
                 Cost = new[] { new Requirement("YggdrasilWood", 20), new Requirement("BlackMetal", 20) },
             },

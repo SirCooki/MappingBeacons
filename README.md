@@ -12,7 +12,9 @@ Files and settings use the internal name ScoutingBeacons (`SirCookie.ScoutingBea
 | Muninn's Spire | 15 Stone, 15 Silver | 2 km² | 18 in-game hours per km² | 0.9 | locations |
 | Allfather's Eye | 20 Yggdrasil wood, 20 Black metal | 4 km² | 6 in-game hours per km² | 0.75 | locations and ores |
 
-- The model is a recoloured Obliterator; wisps circle a working beacon, red and pulsing wisps indicate it has passed its optimal range.
+- The model is a recoloured Obliterator. A working beacon sends up a short beam of light, with wisps circling it in the
+  same colour: yellow (Huginn's Cairn), white (Muninn's Spire), green (Allfather's Eye). Red, pulsing light means it has
+  passed its optimal range. "Show beacon light" in the config switches the beam off.
 - **Mapping:** circling outwards over non-ocean biomes. The ocean is the limit: one beacon
   maps one island and never the sea around it. Rings the builder had already explored are not counted in fuel cost.
 - **Fuel:** Add different fuel from inventory in the beacon. "Add all fuel" moves all possible fuel from your inventory into it. Untill you press "Fuel the beacon" you can take it out afterwards all fuel is permanently part of the beacon and is lost when it is moved.
@@ -47,6 +49,11 @@ In this overview you can see how much fuel you get from each resource.
 | Black core | 100 |
 
 ## Screenshots
+
+### Beacon light
+
+![The three beacons with their light beams, by day: one past its optimal range (red), silver (white) and black metal (green)](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/beacons_day.jpg)
+![The beams at night: bronze (yellow), silver (white) and black metal (green)](https://raw.githubusercontent.com/SirCooki/MappingBeacons/main/img/beacons_night.jpg)
 
 **Huginn's Cairn** (bronze)
 
@@ -102,7 +109,8 @@ the real deposits around you.
 
 ## Credits
 
-Icon: <a href="https://www.flaticon.com/free-icons/binoculars" title="binoculars icons">Binoculars icons created by Smashicons - Flaticon</a>
+- The beacon light beam was inspired by [The Fifth Beacon](https://thunderstore.io/c/valheim/p/Gomis_Groovy_Grotto/TheFifthBeacon/) by Gomis Groovy Grotto.
+- Icon: <a href="https://www.flaticon.com/free-icons/binoculars" title="binoculars icons">Binoculars icons created by Smashicons - Flaticon</a>
 
 ## Licence
 

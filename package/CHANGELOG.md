@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5 - Beacon light
+- A working beacon sends up a short beam of light; the wisps circle it in the same colour: yellow (Huginn's Cairn),
+  white (Muninn's Spire), green (Allfather's Eye), red and pulsing past the optimal range. New setting
+  "01 - General / Show beacon light" (on). Inspired by The Fifth Beacon by Gomis Groovy Grotto.
+
 ## 1.0.4 - UI + icon improvements
 - Status panel reorganised: Available Fuel, Remaining fuel for optimal range, Fuel depletion countdown, Current range
   from beacon, Optimal zone progress. "Remaining fuel" counts fuel waiting in the slots and warns when the optimal

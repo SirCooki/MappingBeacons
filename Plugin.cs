@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Configs;
@@ -16,12 +16,13 @@ namespace ScoutingBeacons
     {
         public const string PluginGUID = "SirCookie.ScoutingBeacons";
         public const string PluginName = "Valdar - Beacons that map";
-        public const string PluginVersion = "1.0.4";
+        public const string PluginVersion = "1.0.5";
 
         public const string BasePrefab = "incinerator"; // the Obliterator
 
         /// Inactive copy of the Wisplight's floating wisp, visuals only; beacons clone it while active.
         public static GameObject WispTemplate;
+        public static Material BeamMaterial; // additive particle material from the wisp, used for the light beam
 
         private void Awake()
         {
@@ -45,6 +46,9 @@ namespace ScoutingBeacons
         {
             PrefabManager.OnVanillaPrefabsAvailable -= AddPieces;
             WispTemplate = MakeWispTemplate();
+            var particles = WispTemplate ? WispTemplate.GetComponentInChildren<ParticleSystemRenderer>(true) : null;
+            BeamMaterial = particles ? particles.sharedMaterial : null;
+            if (!BeamMaterial) Jotunn.Logger.LogWarning("No glow material found on the wisp; beacons get no light beam");
             foreach (var tier in BeaconTiers.All) AddBeacon(tier);
         }
 

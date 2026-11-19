@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace ScoutingBeacons
@@ -302,17 +302,18 @@ namespace ScoutingBeacons
         // ---- looks ----
 
         private static readonly Color PastLimitColor = new Color(1f, 0.15f, 0.1f);
-        private bool m_wispsRed;
+        private Color? m_wispColour;
 
+        /// Wisps circle a working beacon in its tier colour; past the area limit they turn red and pulse.
         private void UpdateWisps()
         {
             bool show = Active && Plugin.WispTemplate;
             int want = show && Tier != null ? Tier.Wisps : 0;
-            // Scouting a ring past the area limit: red, pulsing wisps (rebuilt when that changes)
             bool red = show && Ring + 1 > Tier.LimitRing;
-            if (red != m_wispsRed)
+            Color colour = red ? PastLimitColor : Tier != null ? Tier.Glow : Color.white;
+            if (m_wispColour != colour)
             {
-                m_wispsRed = red;
+                m_wispColour = colour; // rebuilt with the new colour
                 foreach (var w in m_wisps) Destroy(w.gameObject);
                 m_wisps.Clear();
             }
@@ -324,7 +325,7 @@ namespace ScoutingBeacons
             while (m_wisps.Count < want)
             {
                 var wisp = Instantiate(Plugin.WispTemplate, transform);
-                if (red) Recolour(wisp, PastLimitColor);
+                Recolour(wisp, colour);
                 wisp.SetActive(true);
                 m_wisps.Add(wisp.transform);
             }
@@ -337,6 +338,47 @@ namespace ScoutingBeacons
                 m_wisps[i].position = transform.position +
                     new Vector3(Mathf.Cos(a) * 1.4f, 2.2f + Mathf.Sin(Time.time * 1.7f + i) * 0.25f, Mathf.Sin(a) * 1.4f);
             }
+            UpdateBeam(show && Settings.ShowBeam.Value, colour, pulse);
+        }
+
+        // ---- light beam (own effect, inspired by Gomis Groovy Grotto's TheFifthBeacon) ----
+
+        private const float BeamHeight = 60f;
+        private LineRenderer m_beam;
+
+        /// A short vertical beam of light in the wisp colour. Visual only: no Light component, so it doesn't light the
+        /// ground (the wisps do that).
+        private void UpdateBeam(bool show, Color colour, float pulse)
+        {
+            if (!show)
+            {
+                if (m_beam) m_beam.enabled = false;
+                return;
+            }
+            if (!m_beam)
+            {
+                var material = Plugin.BeamMaterial;
+                if (!material) return;
+                var go = new GameObject("sb_beam");
+                go.transform.SetParent(transform, false);
+                m_beam = go.AddComponent<LineRenderer>();
+                m_beam.sharedMaterial = material;
+                m_beam.useWorldSpace = true;
+                m_beam.positionCount = 2;
+                m_beam.textureMode = LineTextureMode.Stretch;
+                m_beam.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                m_beam.receiveShadows = false;
+            }
+            m_beam.enabled = true;
+            var bottom = transform.position + Vector3.up * 2f;
+            m_beam.SetPosition(0, bottom);
+            m_beam.SetPosition(1, bottom + Vector3.up * BeamHeight);
+            float width = 0.9f * pulse;
+            m_beam.startWidth = width;
+            m_beam.endWidth = width * 0.35f;
+            var c = colour * 1.6f;
+            m_beam.startColor = new Color(c.r, c.g, c.b, 0.9f);
+            m_beam.endColor = new Color(c.r, c.g, c.b, 0f);
         }
 
         private static void Recolour(GameObject wisp, Color color)
