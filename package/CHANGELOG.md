@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.6 - Build menu order
+- The beacons come first in the hammer's Misc tab (after Death & Taxes' tribute tables when that mod is installed), bronze, silver, black metal.
+
 ## 1.0.5 - Beacon light
 - A working beacon sends up a short beam of light; the wisps circle it in the same colour: yellow (Huginn's Cairn),
   white (Muninn's Spire), green (Allfather's Eye), red and pulsing past the optimal range. New setting
